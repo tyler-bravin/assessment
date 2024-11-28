@@ -610,8 +610,20 @@ public class ConstantFolder implements ActualParameterVisitor<Void, AbstractSynt
 				ie.type = StdEnvironment.integerType;
 				return ie;
 			} else if (foldedValue instanceof Boolean) {
-				/* currently not handled! */
-			}
+			// Handle boolean folded value
+			String spelling = (Boolean) foldedValue ? "true" : "false";
+			Identifier boolId = new Identifier(spelling, node1.getPosition());
+
+			// Link to the standard environment declarations
+			boolId.decl = (Boolean) foldedValue ? StdEnvironment.trueDecl : StdEnvironment.falseDecl;
+
+			// Create the corresponding VnameExpression
+			SimpleVname boolVname = new SimpleVname(boolId, node1.getPosition());
+			VnameExpression boolExpr = new VnameExpression(boolVname, node1.getPosition());
+			boolExpr.type = StdEnvironment.booleanType;
+
+			return boolExpr;
+		}
 		}
 
 		// any unhandled situation (i.e., not foldable) is ignored
