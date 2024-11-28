@@ -196,6 +196,25 @@ public final class Checker implements ActualParameterVisitor<FormalParameter, Vo
 		return null;
 	}
 
+	@Override
+	public Void visitLoopWhileCommand(LoopWhileCommand ast, Void arg) {
+		// Check the initial commands (C1)
+		ast.C1.visit(this);
+
+		// Check the condition (E)
+		var eType = ast.E.visit(this);
+		checkAndReportError(
+				eType.equals(StdEnvironment.booleanType),
+				"Boolean expression expected here",
+				ast.E
+		);
+
+		// Check the conditional commands (C2)
+		ast.C2.visit(this);
+
+		return null;
+	}
+
 
 	// Expressions
 

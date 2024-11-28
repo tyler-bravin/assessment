@@ -1,0 +1,14 @@
+let
+    var x: Integer;
+    var y: Integer
+in
+begin
+    x := 0;
+    y := 10;
+    loop
+        x := x + 1
+    while
+        x < y
+    do
+        putint(x)
+end

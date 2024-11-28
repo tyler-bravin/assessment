@@ -87,6 +87,11 @@ public class SummaryVisitor implements CommandVisitor<Void, Void>, ExpressionVis
         return null;
     }
 
+    @Override
+    public Void visitLoopWhileCommand(LoopWhileCommand ast, Void unused) {
+        return null;
+    }
+
     // Expressions
     @Override
     public Void visitUnaryExpression(UnaryExpression ast, Void unused) {

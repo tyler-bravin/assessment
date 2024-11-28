@@ -165,6 +165,18 @@ public class LayoutVisitor implements ActualParameterVisitor<Void, DrawingTree>,
 		return layoutUnary("SquareCom.", d1);
 	}
 
+	@Override
+	public DrawingTree visitLoopWhileCommand(LoopWhileCommand ast, Void obj) {
+		// Visit the components of the LoopWhileCommand
+		var d1 = ast.C1.visit(this); // Initial command
+		var d2 = ast.E.visit(this);  // Condition
+		var d3 = ast.C2.visit(this); // Loop body command
+
+		// Create a ternary layout with the label "LoopWhileCom."
+		return layoutTernary("LoopWhileCom.", d1, d2, d3);
+	}
+
+
 	// Expressions
 	@Override
 	public DrawingTree visitArrayExpression(ArrayExpression ast, Void obj) {

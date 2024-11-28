@@ -20,6 +20,7 @@ public interface CommandVisitor<TArg, TResult> {
 
 	TResult visitSquareCommand(SquareCommand ast, TArg arg); // Added method for SquareCommand
 
+	TResult visitLoopWhileCommand(LoopWhileCommand ast, TArg arg);
 
 
 }

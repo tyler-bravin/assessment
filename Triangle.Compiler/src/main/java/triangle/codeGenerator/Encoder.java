@@ -135,6 +135,33 @@ public final class Encoder implements ActualParameterVisitor<Frame, Integer>,
 	}
 
 	@Override
+	public Void visitLoopWhileCommand(LoopWhileCommand ast, Frame frame) {
+		// Generate code for C1 (unconditional command)
+		ast.C1.visit(this, frame);
+
+		// Label for the condition check
+		int conditionLabel = emitter.getNextInstrAddr();
+
+		// Generate code for E (condition expression)
+		ast.E.visit(this, frame);
+
+		// Jump to exit if condition is false
+		int exitLabel = emitter.emit(OpCode.JUMPIF, Machine.falseRep, Register.CB, 0);
+
+		// Generate code for C2 (conditional command)
+		ast.C2.visit(this, frame);
+
+		// Jump back to the condition check
+		emitter.emit(OpCode.JUMP, Register.CB, conditionLabel);
+
+		// Patch the exit label
+		emitter.patch(exitLabel);
+
+		return null;
+	}
+
+
+	@Override
 	public Void visitAssignCommand(AssignCommand ast, Frame frame) {
 		var valSize = ast.E.visit(this, frame);
 		encodeStore(ast.V, frame.expand(valSize), valSize);
