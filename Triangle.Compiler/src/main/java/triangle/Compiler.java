@@ -22,6 +22,7 @@ import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 
 import triangle.abstractSyntaxTrees.Program;
+import triangle.abstractSyntaxTrees.visitors.SummaryVisitor;
 import triangle.codeGenerator.Emitter;
 import triangle.codeGenerator.Encoder;
 import triangle.contextualAnalyzer.Checker;
@@ -50,6 +51,9 @@ public class Compiler {
 
 	@Argument(alias = "a", description = "Show tree after folding")
 	static boolean showTreeAfter = false;
+
+	@Argument(alias = "s", description = "Show program statistics")
+	static boolean showStatistics = false;
 
 	private static Scanner scanner;
 	private static Parser parser;
@@ -95,12 +99,8 @@ public class Compiler {
 		encoder = new Encoder(emitter, reporter);
 		drawer = new Drawer();
 
-		// scanner.enableDebugging();
 		theAST = parser.parseProgram(); // 1st pass
 		if (reporter.getNumErrors() == 0) {
-			// if (showingAST) {
-			// drawer.draw(theAST);
-			// }
 			System.out.println("Contextual Analysis ...");
 			checker.check(theAST); // 2nd pass
 			if (showingAST) {
@@ -108,6 +108,16 @@ public class Compiler {
 			}
 			if (folding) {
 				theAST.visit(new ConstantFolder());
+			}
+
+			// Integrate SummaryVisitor
+			if (showStatistics) {
+				SummaryVisitor visitor = new SummaryVisitor();
+				visitor.visitProgram(theAST, null);
+				System.out.println("Program Statistics:");
+				System.out.println("Binary Expressions: " + visitor.getBinaryExpressionCount());
+				System.out.println("If Commands: " + visitor.getIfCommandCount());
+				System.out.println("While Commands: " + visitor.getWhileCommandCount());
 			}
 
 			if (reporter.getNumErrors() == 0) {
@@ -126,6 +136,7 @@ public class Compiler {
 		return successful;
 	}
 
+
 	/**
 	 * Triangle compiler main program.
 	 *
@@ -142,7 +153,7 @@ public class Compiler {
 		}
 
 		if (args.length < 1) {
-			System.out.println("Usage: tc filename [-o=outputfilename] [tree] [folding] [showTreeAfter]");
+			System.out.println("Usage: tc filename [-o=outputfilename] [tree] [folding] [showTreeAfter] [showStatistics]");
 			System.exit(1);
 		}
 
